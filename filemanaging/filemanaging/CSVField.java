@@ -10,26 +10,43 @@ package filemanaging;
 public class CSVField implements ICSVField
 {
     // variabili d'istanza - sostituisci l'esempio che segue con il tuo
-    private int x;
-
+    private String name;
+    private String value;
+    
+    
     /**
      * Costruttore degli oggetti di classe  CSVField
      */
-    public CSVField()
+    public CSVField(String name, String value)
     {
         // inizializza le variabili d'istanza
-        x = 0;
+        this.name = name;
+        this.value = value;
+
+    }
+    
+    public CSVField(CSVHeader header, String value)
+    {
+        // inizializza le variabili d'istanza
+        this.name = header.getName();
+        this.value = value;
+
+    }
+    
+    public String getName()
+    {
+        return this.name;
+    }
+    
+    public String getValue()
+    {
+        return this.value;
+    }
+    
+    public void setValue(String value)
+    {
+        this.value = value;
     }
 
-    /**
-     * Un esempio di metodo - aggiungi i tuoi commenti
-     * 
-     * @param  y   un parametro d'esempio per un metodo
-     * @return     la somma di x e y
-     */
-    public int sampleMethod(int y)
-    {
-        // metti qui il tuo codice
-        return x + y;
-    }
+
 }

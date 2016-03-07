@@ -7,29 +7,18 @@ package filemanaging;
  * @author (il tuo nome) 
  * @version (un numero di versione o una data)
  */
-public class CSVHeader implements ICSVField
+public class CSVHeader
 {
-    // variabili d'istanza - sostituisci l'esempio che segue con il tuo
-    private int x;
+    private String name;
 
-    /**
-     * Costruttore degli oggetti di classe  CSVHeader
-     */
-    public CSVHeader()
-    {
-        // inizializza le variabili d'istanza
-        x = 0;
+    public CSVHeader(String name) {
+        this.name = name;
     }
+    
+    public String getName ()
+    {
+        return this.name;
+    }
+    
 
-    /**
-     * Un esempio di metodo - aggiungi i tuoi commenti
-     * 
-     * @param  y   un parametro d'esempio per un metodo
-     * @return     la somma di x e y
-     */
-    public int sampleMethod(int y)
-    {
-        // metti qui il tuo codice
-        return x + y;
-    }
 }

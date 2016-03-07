@@ -1,5 +1,7 @@
 package filemanaging;
 
+import java.util.ArrayList;
+
 
 /**
  * Aggiungi qui una descrizione della classe CSVFilePool
@@ -7,29 +9,17 @@ package filemanaging;
  * @author (il tuo nome) 
  * @version (un numero di versione o una data)
  */
-public class CSVFilePool
+public class CSVFilePool extends ArrayList<ICSVFile>
 {
-    // variabili d'istanza - sostituisci l'esempio che segue con il tuo
-    private int x;
+    // variabili d'istanza
 
     /**
      * Costruttore degli oggetti di classe  CSVFilePool
      */
     public CSVFilePool()
     {
-        // inizializza le variabili d'istanza
-        x = 0;
+        super();
     }
 
-    /**
-     * Un esempio di metodo - aggiungi i tuoi commenti
-     * 
-     * @param  y   un parametro d'esempio per un metodo
-     * @return     la somma di x e y
-     */
-    public int sampleMethod(int y)
-    {
-        // metti qui il tuo codice
-        return x + y;
-    }
+
 }

@@ -10,11 +10,6 @@ package filemanaging;
 
 public interface ICSVLine
 {
-    /**
-     * Un esempio di header di metodo - aggiungi i tuoi commenti
-     * 
-     * @param  y    un parametro d'esempio per il metodo
-     * @return    il risultato prodotto dal metodo
-     */
-    int sampleMethod(int y);
+   
+
 }

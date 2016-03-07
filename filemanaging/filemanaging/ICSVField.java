@@ -10,11 +10,10 @@ package filemanaging;
 
 public interface ICSVField
 {
-    /**
-     * Un esempio di header di metodo - aggiungi i tuoi commenti
-     * 
-     * @param  y    un parametro d'esempio per il metodo
-     * @return    il risultato prodotto dal metodo
-     */
-    int sampleMethod(int y);
+    
+    public String getName();
+        
+    public String getValue();
+   
+    public void setValue(String value);
 }
