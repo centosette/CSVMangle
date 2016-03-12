@@ -5,13 +5,14 @@
  */
 package filemanaging;
 
+import config.Config;
 import java.util.ArrayList;
 
 /**
  *
  * @author marco
  */
-public class CSVHeadLine extends ArrayList<CSVHeader>{
+public class CSVHeadLine extends ArrayList<ICSVField> implements ICSVLine{
     
     private String text;
     private String separator = Config.DEFAULT_SEPARATOR;
@@ -23,9 +24,10 @@ public class CSVHeadLine extends ArrayList<CSVHeader>{
         this.text = text;
         this.separator = separator;
         
+        
         for (String s : text.split(separator))
         {
-            this.add(new CSVHeader(s));
+            this.add(new CSVHeader(s, this.headerCount));
             headerCount++;
         }
     }
@@ -41,8 +43,17 @@ public class CSVHeadLine extends ArrayList<CSVHeader>{
         return this.text;
     }
     
-    public int getHeaderCount()
+    public String getHeaders() {
+        return this.text;
+    }
+    
+    public int getFieldCount()
     {
         return this.headerCount;
+    }
+    
+    public String getSeparator()
+    {
+        return this.separator;
     }
 }

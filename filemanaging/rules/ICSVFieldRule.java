@@ -1,4 +1,4 @@
-package filemanaging;
+package rules;
 
 
 /**
@@ -8,7 +8,7 @@ package filemanaging;
  * @version (un numero di versione o una data)
  */
 
-public interface ICSVKeySpec
+public interface ICSVFieldRule
 {
     /**
      * Un esempio di header di metodo - aggiungi i tuoi commenti

@@ -13,7 +13,14 @@ public interface ICSVField
     
     public String getName();
         
+    public void setName(String name);
+    
     public String getValue();
    
     public void setValue(String value);
+    
+    public int getPosition();
+    
+    public void setPosition(int position);
+    
 }

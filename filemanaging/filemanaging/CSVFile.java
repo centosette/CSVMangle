@@ -1,8 +1,10 @@
 package filemanaging; 
 
+import config.Config;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
+import java.util.ArrayList;
 
 /**
  * Aggiungi qui una descrizione della classe CSVFile
@@ -25,6 +27,9 @@ public class CSVFile implements ICSVFile
     private boolean hasHeaders = true;
     private Charset cs = Charset.defaultCharset();
     private CSVHeadLine headers = null;
+    private boolean haveGuessedLines = false;
+    private long guessedLines = 0;
+    private long size = 0;
 
     /**
      * Costruttore degli oggetti di classe  CSVFile
@@ -33,7 +38,7 @@ public class CSVFile implements ICSVFile
             , String separator
             , int recordlength
             , Charset cs
-            , boolean hasHeaders) 
+            , boolean hasHeaders) throws IOException 
     {
         // inizializza le variabili d'istanza
         this.filePath = filePath;
@@ -46,6 +51,17 @@ public class CSVFile implements ICSVFile
             this.readLine = false;
         }
         this.cs = cs;
+        this.size = Files.size(filePath);
+        if (recordlength > 0) 
+        {
+            this.guessedLines = (long) Math.ceil((double)(size/recordlength));
+            this.haveGuessedLines = true;
+        }
+        else
+        {
+            //line guess is deferred to openforreading operation
+        }
+        
     }
     
     public CSVFile(String filename
@@ -60,67 +76,6 @@ public class CSVFile implements ICSVFile
     }
  
     
-    public void openRead() throws IOException, IllegalReadingMethodException
-    {
-        if (this.fileIsOpen)
-        {
-            this.close();
-        }
-        this.forReading = true;
-        try
-        {
-            this.filein = Files.newBufferedReader(filePath,cs);
-            createHeaders();
-            this.fileIsOpen = true;
-        }
-        catch (IOException ex)
-        {
-            this.fileIsOpen = false;
-            throw(ex);
-        }
-    }
-    
-    public void openWrite() throws IOException
-    {
-        if (this.fileIsOpen)
-        {
-            this.close();
-        }
-        this.forReading = false;
-        try
-        {
-            {
-                this.fileout = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING);
-            }
-            this.fileIsOpen = true;
-        }
-        catch (IOException ex)
-        {
-            this.fileIsOpen = false;
-            throw(ex);
-        }
-    }
-    
-    public void openAppend() throws IOException
-    {
-        if (this.fileIsOpen)
-        {
-            this.close();
-        }
-        this.forReading = false;
-        try
-        {
-            {
-                this.fileout = Files.newBufferedWriter(filePath, StandardOpenOption.APPEND);
-            }
-            this.fileIsOpen = true;
-        }
-        catch (IOException ex)
-        {
-            this.fileIsOpen = false;
-            throw(ex);
-        }
-    }
     
     public void close() throws IOException
     {
@@ -134,17 +89,24 @@ public class CSVFile implements ICSVFile
            {
              //do nothing;  
            }
-           fileIsOpen = false;
+           this.setClosed();
         }
         
     }
     
-    public String getLine() throws IOException, IllegalReadingMethodException
+    public void delete() throws IOException
     {
-        if (readLine && forReading && fileIsOpen) {
+        if (this.fileIsOpen) this.close();
+        Files.delete(filePath);
+    }
+    
+    public String getLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    {
+        if (!fileIsOpen) this.openRead();
+        if (readLine && forReading) {
          return filein.readLine();
         }
-        if (!readLine && forReading && fileIsOpen)
+        if (!readLine && forReading)
         {
             char buffer[] = null;
             int read;
@@ -179,14 +141,32 @@ public class CSVFile implements ICSVFile
         }
         return pool;
     }
-        
-    public void writeLine(String line) throws IOException, IllegalReadingMethodException
+    
+    
+    
+    public ArrayList<String> readSample(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
     {
-        if (readLine && !forReading && fileIsOpen) {
+        ArrayList<String> sample = new ArrayList<>();
+        int count = 0;
+        String line;
+        while ((line = this.getLine()) != null)
+        {
+            sample.add(line);
+            count++;
+            if (count==maxSize) return sample;
+        }
+        return sample;
+        
+    }
+        
+    public void writeLine(String line) throws IOException, IllegalWritingMethodException
+    {
+        if (!fileIsOpen) openWrite();
+        if (readLine && !forReading) {
          fileout.write(line);
          fileout.newLine();
         }
-        if (!readLine && !forReading && fileIsOpen) {
+        if (!readLine && !forReading) {
             char buffer[];
             if (line.length() < this.recordlength)
             {
@@ -198,7 +178,27 @@ public class CSVFile implements ICSVFile
             buffer = line.toCharArray();
             fileout.write(buffer);
         }
-        throw(new IllegalReadingMethodException());
+        throw(new IllegalWritingMethodException());
+    }
+    
+    public void writePool(CSVLinePool pool) throws IOException, IllegalWritingMethodException
+    {
+        for(ICSVLine l : pool)
+        {
+            this.writeLine(l.toString());
+        }
+    }
+    
+    public void appendLine(String line) throws IOException, IllegalWritingMethodException
+    {
+        if (!fileIsOpen) openAppend();
+        writeLine(line);
+    }
+    
+    public void appendPool(CSVLinePool pool) throws IOException, IllegalWritingMethodException
+    {
+        if (!fileIsOpen) openAppend();
+        writePool(pool);
     }
     
      public boolean isFileOpen()
@@ -246,8 +246,95 @@ public class CSVFile implements ICSVFile
         this.headers = headers;
 
     }
+    
+    public long getGuessedLines()
+    {
+        if(haveGuessedLines) return this.guessedLines;
+        return 0L;
+    }
+    
+    public long getSize()
+    {
+        return this.size;
+    }
+    
+    private void setClosed()
+    {
+        this.fileIsOpen = false;
+        this.filein = null;
+        this.fileout = null;
+    }
+    
+    private void setOpen()
+    {
+        this.fileIsOpen = true;
+    }
+    
+   
+    private void openRead() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    {
+        if (this.fileIsOpen)
+        {
+            this.close();
+        }
+        this.forReading = true;
+        try
+        {
+            this.filein = Files.newBufferedReader(filePath,cs);
+            createHeaders();
+            guessLines();
+            this.setOpen();
+        }
+        catch (IOException ex)
+        {
+            this.setClosed();
+            throw(ex);
+        }
+    }
+    
+    private void openWrite() throws IOException
+    {
+        if (this.fileIsOpen)
+        {
+            this.close();
+        }
+        this.forReading = false;
+        try
+        {
+            {
+                this.fileout = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+            this.setOpen();
+        }
+        catch (IOException ex)
+        {
+            this.setClosed();
+            throw(ex);
+        }
+    }
+    
+    private void openAppend() throws IOException
+    {
+        if (this.fileIsOpen)
+        {
+            this.close();
+        }
+        this.forReading = false;
+        try
+        {
+            {
+                this.fileout = Files.newBufferedWriter(filePath, StandardOpenOption.APPEND);
+            }
+            this.setOpen();
+        }
+        catch (IOException ex)
+        {
+            this.setClosed();
+            throw(ex);
+        }
+    }
 
-    private void createHeaders() throws IOException, IllegalReadingMethodException {
+    private void createHeaders() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
         String line;
         line = this.getLine();
         
@@ -269,6 +356,32 @@ public class CSVFile implements ICSVFile
         }
         
     }
-        
+
+    private void guessLines() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
+        if (!haveGuessedLines)
+        {
+            long totalLength = 0;
+            ArrayList<String> sample = this.readSample(Config.SAMPLE_SIZE_SMALL);
+            for (String s : sample)
+            {
+                totalLength += s.getBytes().length + Config.DEFAULT_NEWLINE_BYTES;
+            }
+            this.guessedLines = (long)Math.ceil((double)this.size/((double)(totalLength/Config.SAMPLE_SIZE_SMALL)));
+            this.haveGuessedLines = true;
+            
+        }
+    }
+
+    @Override
+    public void rewind() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
+        reOpen(); //there must be some way better than this...
+
+    }
+    private void reOpen() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
+        if (this.fileIsOpen && this.forReading) {
+            this.close();
+            this.openRead();
+        }
+    }
 
 }

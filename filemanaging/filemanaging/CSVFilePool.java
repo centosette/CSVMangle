@@ -12,6 +12,9 @@ import java.util.ArrayList;
 public class CSVFilePool extends ArrayList<ICSVFile>
 {
     // variabili d'istanza
+    
+    private int fileCount=0;
+    private int openFileCount = 0;
 
     /**
      * Costruttore degli oggetti di classe  CSVFilePool
@@ -20,6 +23,33 @@ public class CSVFilePool extends ArrayList<ICSVFile>
     {
         super();
     }
-
+    
+    public boolean add(ICSVFile file)
+    {
+        boolean add = super.add (file);
+        fileCount++;
+        return add;
+    }
+    
+    public int getFileCount()
+    {
+        return this.fileCount;
+    }
+    
+    public int getOpenFileCount()
+    {
+        return this.openFileCount;
+    }
+    
+    public void notifyClosed()
+    {
+        this.openFileCount --;
+    }
+    
+    public void notifyOpen()
+    {
+        this.openFileCount ++;
+    }
+    
 
 }

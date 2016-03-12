@@ -1,5 +1,6 @@
 package filemanaging;
 
+import config.Config;
 import java.util.ArrayList;
 
 
@@ -27,6 +28,8 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
         this.separator = separator;
         this.text = text;
         this.fieldCount = headLine.size();
+        this.headLine = headLine;
+        this.headers = headLine.toString();
         
         if (this.fieldCount != text.split(this.separator).length)
         {
@@ -35,17 +38,31 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
         int count = 0;
         for(String s : text.split(this.separator))
         {
-            this.add(new CSVField(headLine.get(count), s));
+            this.add(new CSVField((CSVHeader)headLine.get(count), s, count));
             count++;
         }
         
     }
-    public CSVLine(String text)
+   
+
+    public String toString()
     {
-        // inizializza le variabili d'istanza
-     
+        return this.text;
+    }
+    
+    public String getSeparator()
+    {
+        return this.separator;
     }
 
-    
+    @Override
+    public int getFieldCount() {
+        return this.fieldCount;
+    }
+
+    @Override
+    public String getHeaders() {
+        return this.headers;
+    }
    
 }

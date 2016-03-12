@@ -9,7 +9,7 @@ package filemanaging;
  *
  * @author marco
  */
-class IllegalFieldNumberInLineException extends Exception {
+public class IllegalFieldNumberInLineException extends Exception {
 
     public IllegalFieldNumberInLineException() {
     }
