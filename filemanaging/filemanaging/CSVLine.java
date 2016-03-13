@@ -44,7 +44,10 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
         
     }
    
-
+    /**
+     * Get a String representation.
+     * @return The string from the file that originated the CSV Line
+     */
     public String toString()
     {
         return this.text;

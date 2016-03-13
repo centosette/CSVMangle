@@ -35,6 +35,8 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     private ArrayList<V> values;
     private int[][] association;
     private Behaviour behaviour;
+    private int removalCount = 0;
+    private final int REMOVAL_CHECK = 50;
     
     
     
@@ -53,6 +55,13 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     public NaiveCollection ()
     {
         this(Behaviour.EXCEPTION);
+    }
+    
+    public NaiveCollection (double loadFactor)
+    {
+        this(Behaviour.EXCEPTION);
+        formallyCheckLoadFactor(loadFactor);
+        this.loadFactor = loadFactor;
     }
     
     private boolean updateStats(double loadFactor)
@@ -158,7 +167,7 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
         //delete all the EMPTY parts such that the new ratio comes close to targetLoadFactor
         //makes sense only if the number of EMPTY is very high with respect to the association's size
         //that may show up if a great number of removals take place. In that case, the actual load factor should be low
-        //and the target should be higher, for a better memory space usage.
+        //and the target load factor should be higher, for a better memory space usage.
         formallyCheckLoadFactor(targetLoadFactor);
         updateStats(this.loadFactor);
         if(this.actualALoad >= targetLoadFactor) return;
@@ -194,6 +203,7 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     {
         //upsize if necessary
         formallyCheckLoadFactor(targetLoadFactor);
+        this.loadFactor = targetLoadFactor;
         if (!updateStats(targetLoadFactor)) return;
         if (this.actualALoad > targetLoadFactor)
         {
@@ -523,6 +533,8 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
                 if(this.countKey(key) == 0) removeKey(key);
                 if(this.countValue(value) == 0) removeValue(value);
                 associationCount--;
+                removalCount++;
+                if(removalCount % REMOVAL_CHECK == 0) cleanupAssociation(this.loadFactor);
                 return true;
             }
             if(association[KCOLUMN][i] != EMPTY) nonempty++;
@@ -551,6 +563,12 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     @Override
     public void upsize(double targetLoadFactor) {
         this.checkLoad(targetLoadFactor);
+    }
+    
+    @Override
+    public void checkLoadFactor()
+    {
+        this.checkLoad();
     }
     
     public String toString()

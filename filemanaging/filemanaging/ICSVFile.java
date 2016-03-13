@@ -30,6 +30,7 @@ public interface ICSVFile
     public String getLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
     public CSVLine getCSVLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
     public CSVLinePool getPool(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
+    public CSVLinePool getPool(int maxLines, long offset, long maxBytes) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
     public ArrayList<String> readSample(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
     public void writeLine(String line) throws IOException, IllegalWritingMethodException;
     public void writePool(CSVLinePool pool) throws IOException, IllegalWritingMethodException;

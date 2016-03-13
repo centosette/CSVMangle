@@ -28,5 +28,6 @@ public interface AssociativeCollection <K, V>{
     public long getCount();
     public void clear();
     public void upsize(double targetLoadFactor);
+    public void checkLoadFactor();
     
 }

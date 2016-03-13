@@ -144,6 +144,31 @@ public class CSVFile implements ICSVFile
     
     
     
+    public CSVLinePool getPool(int maxLines, long offset, long maxBytes) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    {
+        CSVLinePool pool = new CSVLinePool();
+        int count = 0;
+        long bytes = 0;
+        long skipped;
+        CSVLine line;
+        skipped = this.filein.skip(offset);
+        //
+        if (skipped < offset) return null;
+        //read first (possibly broken) line
+        filein.readLine();
+        
+        while ((line = this.getCSVLine()) != null)
+        {
+            pool.add(line);
+            bytes += line.
+            count++;
+            if (count==maxLines) return pool;
+        }
+        return pool;
+    }
+    
+    
+    
     public ArrayList<String> readSample(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
     {
         ArrayList<String> sample = new ArrayList<>();

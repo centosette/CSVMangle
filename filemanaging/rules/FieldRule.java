@@ -6,8 +6,6 @@ package rules;
 
 import config.Config.DataType;
 import datastructures.AssociativeCollection;
-import datastructures.DuplicatedPairException;
-import java.util.Map;
 import rules.Rules.Rule;
 
 /**
@@ -27,9 +25,15 @@ public class FieldRule {
         return this.rule;
     }
     
-    public void setRule (Rule r) throws IncompatibleTypeAndRuleException
+    public boolean setRule (Rule r) throws IncompatibleTypeAndRuleException
     {
-        this.rule = r;
+        if(checkCompatibility(r))
+        {
+            this.rule = r;
+            return true;
+        }
+        return false;
+        
     }
     
     public FieldType getFieldType()
@@ -37,10 +41,12 @@ public class FieldRule {
         return this.fType;
     }
     
-    private boolean checkCompatibility (FieldType ft, Rule r) throws DuplicatedPairException
+    private boolean checkCompatibility (Rule r)
     {
         AssociativeCollection<DataType, Rule> map = Rules.getTypeRuleCompatibilityMap();
-        DataType t = ft.getDataType();
+        DataType t = this.fType.getDataType();
         //return compatibility check!
+        boolean checkPair = map.checkPair(t, rule);
+        return checkPair;
     }
 }
