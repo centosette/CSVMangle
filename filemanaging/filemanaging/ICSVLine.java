@@ -14,4 +14,5 @@ public interface ICSVLine extends Iterable<ICSVField>
    public String toString();
    public String getSeparator();
    public String getHeaders();
+   public int getStringSize();
 }

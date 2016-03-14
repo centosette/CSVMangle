@@ -160,9 +160,10 @@ public class CSVFile implements ICSVFile
         while ((line = this.getCSVLine()) != null)
         {
             pool.add(line);
-            bytes += line.
+            bytes += (line.getStringSize() + 1) * Character.BYTES; //approximated length in bytes.
             count++;
-            if (count==maxLines) return pool;
+            if (count==maxLines || bytes >= maxBytes) return pool;
+            
         }
         return pool;
     }

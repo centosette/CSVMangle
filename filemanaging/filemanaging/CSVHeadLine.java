@@ -56,4 +56,9 @@ public class CSVHeadLine extends ArrayList<ICSVField> implements ICSVLine{
     {
         return this.separator;
     }
+
+    @Override
+    public int getStringSize() {
+        return this.text.length();
+    }
 }

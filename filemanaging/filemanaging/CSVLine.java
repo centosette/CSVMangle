@@ -67,5 +67,10 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
     public String getHeaders() {
         return this.headers;
     }
+
+    @Override
+    public int getStringSize() {
+        return this.text.length();
+    }
    
 }
