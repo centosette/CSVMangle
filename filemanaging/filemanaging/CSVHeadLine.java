@@ -61,4 +61,14 @@ public class CSVHeadLine extends ArrayList<ICSVField> implements ICSVLine{
     public int getStringSize() {
         return this.text.length();
     }
+
+    @Override
+    public String getValue(int index) {
+        return super.get(index).getValue();
+    }
+
+    @Override
+    public String getName(int index) {
+        return super.get(index).getName();
+    }
 }

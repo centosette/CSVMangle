@@ -6,6 +6,10 @@ package algorithms;
 
 import filemanaging.CSVFilePool;
 import filemanaging.ICSVFile;
+import filemanaging.IllegalFieldNumberInLineException;
+import filemanaging.IllegalReadingMethodException;
+import filemanaging.IllegalWritingMethodException;
+import java.io.IOException;
 
 /**
  *
@@ -13,6 +17,6 @@ import filemanaging.ICSVFile;
  */
 public interface Splitter {
     
-    public CSVFilePool split(ICSVFile file, int size);
+    public CSVFilePool split(ICSVFile file, int size) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException;
     
 }

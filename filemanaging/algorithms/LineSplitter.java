@@ -22,8 +22,8 @@ public class LineSplitter implements Splitter{
     
     private ICSVFile file;
     private int numLines;
-    private CSVFilePool pool;
-    private UniqueGenerator ug;
+    private final CSVFilePool pool;
+    private final UniqueGenerator ug;
     
     public LineSplitter ()
     {
@@ -32,9 +32,10 @@ public class LineSplitter implements Splitter{
     }
 
     @Override
-    public CSVFilePool split(ICSVFile file, int numLines) {
+    public CSVFilePool split(ICSVFile file, int numLines) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException{
         this.file = file;
         this.numLines = numLines;
+        splitSerial();
         return pool;       
         
     }

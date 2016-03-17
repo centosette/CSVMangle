@@ -72,4 +72,14 @@ public class CSVSortKeySpec {
 
     }
     
+    public FieldTypeList getFieldTypeList()
+    {
+        return this.typeList;
+    }
+    
+    public int[] getRelevant()
+    {
+        return this.relevant;
+    }
+    
 }
