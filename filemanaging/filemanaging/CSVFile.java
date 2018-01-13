@@ -120,7 +120,7 @@ public class CSVFile implements ICSVFile
         throw(new IllegalReadingMethodException());
     }
     
-    public CSVLine getCSVLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public ICSVLine getCSVLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
     {
         String line;
         line = this.getLine();
@@ -132,7 +132,7 @@ public class CSVFile implements ICSVFile
     {
         CSVLinePool pool = new CSVLinePool();
         int count = 0;
-        CSVLine line;
+        ICSVLine line;
         while ((line = this.getCSVLine()) != null)
         {
             pool.add(line);
@@ -150,7 +150,7 @@ public class CSVFile implements ICSVFile
         int count = 0;
         long bytes = 0;
         long skipped;
-        CSVLine line;
+        ICSVLine line;
         skipped = this.filein.skip(offset);
         //
         if (skipped < offset) return null;
