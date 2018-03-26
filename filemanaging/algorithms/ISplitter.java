@@ -12,11 +12,14 @@ import filemanaging.IllegalWritingMethodException;
 import java.io.IOException;
 
 /**
+ * A Splitter can divide a single ICSVFIle into multiple ones (a pool) of a 
+ * fixed number of lines
+ * 
  *
  * @author marco
  */
-public interface Splitter {
+public interface ISplitter {
     
-    public CSVFilePool split(ICSVFile file, int size) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException;
+    public CSVFilePool split(ICSVFile file, int lines) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException;
     
 }

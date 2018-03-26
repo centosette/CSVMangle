@@ -4,6 +4,7 @@
  */
 package algorithms;
 
+import config.Config;
 import filemanaging.CSVFile;
 import filemanaging.CSVFilePool;
 import filemanaging.CSVLinePool;
@@ -18,7 +19,7 @@ import utils.UniqueGenerator;
  *
  * @author marco
  */
-public class LineSplitter implements Splitter{
+public class LineSplitter implements ISplitter{
     
     private ICSVFile file;
     private int numLines;
@@ -50,7 +51,7 @@ public class LineSplitter implements Splitter{
                 return;
             }
             
-            ICSVFile poolMember = new CSVFile(ug.getUnique() + ".csv");
+            ICSVFile poolMember = new CSVFile(Config.DEFAULT_WORKING_DIR + ug.getUnique() + ".csv");
             poolMember.writePool(lp);
             pool.add(poolMember);
         }

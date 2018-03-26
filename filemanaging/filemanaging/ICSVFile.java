@@ -15,19 +15,47 @@ import java.util.ArrayList;
 public interface ICSVFile
 {
     /**
-     * Un esempio di header di metodo - aggiungi i tuoi commenti
+     * ICSVFile represents a Comma Separated Values file, which is normally a 
+     * plain text file containing tabular data organized in rows and columns.
+     * Data belonging to the same row are separated by a special character, 
+     * called a "separator". Usually the separator is a comma, but maybe a 
+     * semicolon (;) a TAB or other character or sequence of characters 
+     * (@, @@, etc.)
+     * A CSV file may or may not be provided with headers. Headers are placed
+     * in the first row and are not data, but provide instead a description
+     * of the content of the columns. In a plain text file they can't be easily
+     * distinguished from a data row. So the user must provide the information
+     * whether the file has headers or not.
      * 
-     * @param  y    un parametro d'esempio per il metodo
-     * @return    il risultato prodotto dal metodo
+     * ICSVFile provides basic methods for dealing with CSV files.
+     * 
      */
     
-/*    public void openRead() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
-    public void openWrite() throws IOException;
-    public void openAppend() throws IOException;*/
+
     public void close() throws IOException;
     public void delete() throws IOException;
+    /**
+     * Go back to the beginning of the file.
+     * @throws IOException
+     * @throws IllegalReadingMethodException
+     * @throws IllegalFieldNumberInLineException 
+     */
     public void rewind() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
+    /**
+     * Read a line from the file and return it in the form of a text string
+     * @return the line in string format.
+     * @throws IOException
+     * @throws IllegalReadingMethodException
+     * @throws IllegalFieldNumberInLineException 
+     */
     public String getLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
+    /**
+     * Read a line from the file and return it in the form of an ICSVLine object
+     * @return
+     * @throws IOException
+     * @throws IllegalReadingMethodException
+     * @throws IllegalFieldNumberInLineException 
+     */
     public ICSVLine getCSVLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
     public CSVLinePool getPool(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;
     public CSVLinePool getPool(int maxLines, long offset, long maxBytes) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException;

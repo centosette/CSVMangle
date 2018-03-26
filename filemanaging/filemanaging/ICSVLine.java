@@ -2,10 +2,9 @@ package filemanaging;
 
 
 /**
- * Aggiungi qui una descrizione dell'interfaccia ICSVLine
+ * Represents a row or line in a CSV file. The line is a record in the file
+ * and the data are separated by special characters (separators).
  * 
- * @author (il tuo nome) 
- * @version (un numero di versione o una data)
  */
 
 public interface ICSVLine extends Iterable<ICSVField>

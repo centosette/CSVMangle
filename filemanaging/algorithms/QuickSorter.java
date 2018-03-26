@@ -10,7 +10,7 @@ import rules.CSVSortKeySpec;
  * @author (il tuo nome) 
  * @version (un numero di versione o una data)
  */
-public class QuickSorter implements LinePoolSorter
+public class QuickSorter implements ILinePoolSorter
 {
     public QuickSorter()
     {

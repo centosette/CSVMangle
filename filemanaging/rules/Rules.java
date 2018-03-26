@@ -19,6 +19,11 @@ public class Rules {
     public static enum SortDirection{ASC, DESC}
     public static final int NONRELEVANT = -1;
     
+    /**
+     * returns a map of the compatibilities between data types and applicable rules.
+     * 
+     * @return 
+     */
     public static AssociativeCollection<DataType, Rule> getTypeRuleCompatibilityMap()
     {
         AssociativeCollection<DataType, Rule> map = new NaiveCollection<>();

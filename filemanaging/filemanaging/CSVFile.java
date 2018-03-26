@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class CSVFile implements ICSVFile
 {
-    // variabili d'istanza - sostituisci l'esempio che segue con il tuo
+    
     private String filename;
     private String separator = Config.DEFAULT_SEPARATOR;
     private int recordlength = 0;
@@ -45,14 +45,20 @@ public class CSVFile implements ICSVFile
         this.filename = filePath.toString();
         this.separator = separator;
         this.hasHeaders = hasHeaders;
-        if (recordlength > 0) 
+        if (recordlength > 0) //if the records are of a fixed length...
         {
             this.recordlength = recordlength;
             this.readLine = false;
         }
         this.cs = cs;
-        this.size = Files.size(filePath);
-        if (recordlength > 0) 
+        try {
+            this.size = Files.size(filePath);
+        }
+        catch (java.nio.file.NoSuchFileException ex)
+        {
+            this.size = 0;
+        }
+        if (recordlength > 0) //if the records are of a fixed length, the lines are size/record_length
         {
             this.guessedLines = (long) Math.ceil((double)(size/recordlength));
             this.haveGuessedLines = true;
@@ -102,7 +108,7 @@ public class CSVFile implements ICSVFile
     
     public String getLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
     {
-        if (!fileIsOpen) this.openRead();
+        if (!fileIsOpen) this.openRead(true);
         if (readLine && forReading) {
          return filein.readLine();
         }
@@ -128,6 +134,7 @@ public class CSVFile implements ICSVFile
         return new CSVLine(line, this.separator, this.headers);
     }
     
+    @Override
     public CSVLinePool getPool(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
     {
         CSVLinePool pool = new CSVLinePool();
@@ -139,11 +146,13 @@ public class CSVFile implements ICSVFile
             count++;
             if (count==maxSize) return pool;
         }
+        if (count == 0) return null;
         return pool;
     }
     
     
     
+    @Override
     public CSVLinePool getPool(int maxLines, long offset, long maxBytes) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
     {
         CSVLinePool pool = new CSVLinePool();
@@ -192,7 +201,7 @@ public class CSVFile implements ICSVFile
          fileout.write(line);
          fileout.newLine();
         }
-        if (!readLine && !forReading) {
+        else if (!readLine && !forReading) {
             char buffer[];
             if (line.length() < this.recordlength)
             {
@@ -204,7 +213,10 @@ public class CSVFile implements ICSVFile
             buffer = line.toCharArray();
             fileout.write(buffer);
         }
-        throw(new IllegalWritingMethodException());
+        else
+        {
+            throw(new IllegalWritingMethodException());
+        }
     }
     
     public void writePool(CSVLinePool pool) throws IOException, IllegalWritingMethodException
@@ -297,7 +309,7 @@ public class CSVFile implements ICSVFile
     }
     
    
-    private void openRead() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    private void openRead(boolean refreshLinesAndHeaders) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
     {
         if (this.fileIsOpen)
         {
@@ -307,9 +319,13 @@ public class CSVFile implements ICSVFile
         try
         {
             this.filein = Files.newBufferedReader(filePath,cs);
-            createHeaders();
-            guessLines();
             this.setOpen();
+            if (refreshLinesAndHeaders)
+            {
+                createHeaders();
+                guessLines();
+            }
+            
         }
         catch (IOException ex)
         {
@@ -328,7 +344,7 @@ public class CSVFile implements ICSVFile
         try
         {
             {
-                this.fileout = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING);
+                this.fileout = Files.newBufferedWriter(filePath, StandardOpenOption.CREATE);
             }
             this.setOpen();
         }
@@ -359,6 +375,11 @@ public class CSVFile implements ICSVFile
             throw(ex);
         }
     }
+    
+    private void flush() throws IOException
+    {
+        this.fileout.flush();
+    }
 
     private void createHeaders() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
         String line;
@@ -374,15 +395,22 @@ public class CSVFile implements ICSVFile
             int count = 0;
             for (String s : line.split(this.separator))
             {
-                fakeline = "FIELD_" + count + this.separator;
+                fakeline += "FIELD_" + count + this.separator;
                 count++;
             }
             line = fakeline.substring(0, fakeline.lastIndexOf(this.separator)-1);
             this.headers = new CSVHeadLine(line, this.separator);
         }
+        rewind();
         
     }
 
+    /**
+     * 
+     * @throws IOException
+     * @throws IllegalReadingMethodException
+     * @throws IllegalFieldNumberInLineException 
+     */
     private void guessLines() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
         if (!haveGuessedLines)
         {
@@ -394,6 +422,7 @@ public class CSVFile implements ICSVFile
             }
             this.guessedLines = (long)Math.ceil((double)this.size/((double)(totalLength/Config.SAMPLE_SIZE_SMALL)));
             this.haveGuessedLines = true;
+            rewind();
             
         }
     }
@@ -401,13 +430,35 @@ public class CSVFile implements ICSVFile
     @Override
     public void rewind() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
         reOpen(); //there must be some way better than this...
-
+        
+        /*
+        RandomAccessFile f;
+        f = new RandomAccessFile (this.filePath.toFile(), "r");
+        f.seek(0);
+        */
     }
+    
+    /**
+     * reopens a file, only if it's open for reading.
+     * @throws IOException
+     * @throws IllegalReadingMethodException
+     * @throws IllegalFieldNumberInLineException 
+     */
     private void reOpen() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
         if (this.fileIsOpen && this.forReading) {
             this.close();
-            this.openRead();
+            this.openRead(false);
         }
+        
+    }
+    
+    @Override
+    protected void finalize() throws Throwable
+    {
+        if (fileIsOpen && !forReading) this.flush();
+        this.close();
+        super.finalize();
+        
     }
 
 }

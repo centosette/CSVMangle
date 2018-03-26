@@ -9,10 +9,11 @@ import filemanaging.CSVLinePool;
 import rules.CSVSortKeySpec;
 
 /**
+ * sorts a pool of CSVLines
  *
  * @author chiarand
  */
-public interface LinePoolSorter {
+public interface ILinePoolSorter {
     
     public CSVLinePool sort (CSVLinePool inpool, CSVSortKeySpec ks);
     

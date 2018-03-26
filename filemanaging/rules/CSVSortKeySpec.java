@@ -11,7 +11,9 @@ import rules.Rules.SortDirection;
 
 
 /**
- *
+ * Describes which fields of the CSV dataset are relevant for the sorting and
+ * which is the sorting direction for each relevant field.
+ * 
  * @author marco
  */
 public class CSVSortKeySpec {
@@ -32,7 +34,7 @@ public class CSVSortKeySpec {
         }
     }
     
-    public CSVSortKeySpec (FieldTypeList typeList, String relevant) throws NumberFormatException, NegativeIndexForField
+    public CSVSortKeySpec (FieldTypeList typeList, String relevant) throws NumberFormatException, NegativeIndexForFieldException
     {
         ArrayList<Integer> temp = new ArrayList<>();
     
@@ -41,7 +43,7 @@ public class CSVSortKeySpec {
         {
             
                 val = Integer.parseInt(r); //throws NumberFormatException
-                if (val < 0) throw new NegativeIndexForField();
+                if (val < 0) throw new NegativeIndexForFieldException();
                 temp.add(new Integer(val));
         }
         if (typeList.size() != temp.size())

@@ -25,7 +25,7 @@ public class FieldRuleList extends ArrayList<FieldRule>{
         
         while(t.hasNext() && r.hasNext())
         {
-            FieldRule fr = new FieldRule(t.next(), r.next());
+            this.add (new FieldRule(t.next(), r.next()));
         }
         
     }

@@ -9,7 +9,9 @@ import java.util.List;
 /**
  * An associative collection models a set of ordered couples, say (k, v).
  * Multiple couples of type (k, *) are allowed, but there cannot be two
- * identical values for the same key.
+ * identical values for the same key. In other words, an associative collection
+ * can contain both (k1, v1) and (k1, v2), but not two couples (k1, v1). In that
+ * case, a DuplicatedPairException is thrown.
  * @author marco
  */
 public interface AssociativeCollection <K, V>{

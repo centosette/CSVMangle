@@ -13,5 +13,9 @@ public class IllegalFieldNumberInLineException extends Exception {
 
     public IllegalFieldNumberInLineException() {
     }
+
+    IllegalFieldNumberInLineException(String text) {
+        super(text);
+    }
     
 }

@@ -33,7 +33,7 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
         
         if (this.fieldCount != text.split(this.separator).length)
         {
-            throw (new IllegalFieldNumberInLineException());
+            throw (new IllegalFieldNumberInLineException("FIELDCOUNT: " + text.split(this.separator).length + " VS " + fieldCount + " - " + "TEXT: " + text));
         }
         int count = 0;
         for(String s : text.split(this.separator))

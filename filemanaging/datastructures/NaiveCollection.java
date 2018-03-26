@@ -8,12 +8,15 @@ package datastructures;
 import datastructures.DataStructParam.Behaviour;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- *
+ * This implementation maintains keys and values respectively in separated
+ * ArrayList objects. The association between Keys and Values is maintained
+ * in a simple N rows X 2 cols matrix. The 'left' column containing the
+ * key indexes and the right column containing the values indexes.
  * @author marco
+ * 
  */
 public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     
@@ -23,6 +26,8 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     private final int KCOLUMN = 0;
     private final int VCOLUMN = 1;
     private final int COLUMNS = 2;
+    private final double MIN_LOAD_FACTOR = 0.5;
+    private final double MAX_LOAD_FACTOR = 0.95;
     private enum Column {KEYS, VALUES, ALL}
     private double loadFactor = 0.75;
     private double actualKLoad = 0.0;
@@ -101,7 +106,7 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     
     private void formallyCheckLoadFactor(double lf)
     {
-        if(lf < 0.5 || lf > 0.95) throw new IllegalArgumentException("Load Factor can be between 0.5 and 0.95");
+        if(lf < MIN_LOAD_FACTOR || lf > MAX_LOAD_FACTOR) throw new IllegalArgumentException("Load Factor can be between " + MIN_LOAD_FACTOR + " and " + MAX_LOAD_FACTOR);
     }
     
     private void formallyCheckStepSize(int step)
@@ -164,14 +169,19 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     
     private void cleanupAssociation (double targetLoadFactor)
     {
-        //delete all the EMPTY parts such that the new ratio comes close to targetLoadFactor
-        //makes sense only if the number of EMPTY is very high with respect to the association's size
-        //that may show up if a great number of removals take place. In that case, the actual load factor should be low
-        //and the target load factor should be higher, for a better memory space usage.
+        //Delete all the EMPTY parts such that the new ratio comes close to 
+        //targetLoadFactor
+        //It makes sense only if the number of EMPTY is very high with respect 
+        //to the association's size that may show up if a great number of 
+        //removals take place. 
+        //In that case, the actual load factor should be low
+        //and the target load factor should be higher, for a better memory 
+        //space usage.
         formallyCheckLoadFactor(targetLoadFactor);
         updateStats(this.loadFactor);
         if(this.actualALoad >= targetLoadFactor) return;
-        //we have to reduce the vector length in order to achieve a grater LF
+        //we have to reduce the vector length in order to achieve a grater 
+        //LoadFactor
         int newlen = (int)Math.ceil((double)this.associationCount/this.actualALoad);
         int temp[][] = new int[COLUMNS][newlen];
         int j = 0;
@@ -465,7 +475,7 @@ public class NaiveCollection <K, V> implements AssociativeCollection <K, V>{
     
     
     //ABOUT REMOVAL METHODS:
-    /*
+    /**
      * In this implementation, K's and V's are not to be removed, they are set to null
      * The reason lies in the fact that would the object be actually removed from the list
      * the indexes would change, invalidating the association matrix.

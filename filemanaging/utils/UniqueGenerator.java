@@ -6,7 +6,7 @@
 package utils;
 
 /**
- *
+ * Generator of unique hexadecimal strings
  * @author chiarand
  */
 public class UniqueGenerator {

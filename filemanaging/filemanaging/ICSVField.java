@@ -2,7 +2,7 @@ package filemanaging;
 
 
 /**
- * Aggiungi qui una descrizione dell'interfaccia ICSVField
+ * Represents a field in a row.
  * 
  * @author (il tuo nome) 
  * @version (un numero di versione o una data)

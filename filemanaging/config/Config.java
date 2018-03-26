@@ -20,6 +20,8 @@ public final class Config {
     public static final int SAMPLE_SIZE_HUGE = 100000;
     public static final int DEFAULT_NEWLINE_BYTES = 2;
     
+    public static final String DEFAULT_WORKING_DIR = "/tmp/";
+    
     public static enum DataType {NUMERIC, TEXT, DATE, UNDEFINED, ANY}
     public static final int dateFormats[] = {DateFormat.DEFAULT, DateFormat.FULL
                                             , DateFormat.LONG, DateFormat.MEDIUM

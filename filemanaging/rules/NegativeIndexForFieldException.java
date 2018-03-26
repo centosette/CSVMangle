@@ -8,9 +8,9 @@ package rules;
  *
  * @author marco
  */
-class NegativeIndexForField extends Exception {
+class NegativeIndexForFieldException extends Exception {
 
-    public NegativeIndexForField() {
+    public NegativeIndexForFieldException() {
     }
     
 }
