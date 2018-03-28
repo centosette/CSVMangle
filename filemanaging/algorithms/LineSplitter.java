@@ -53,6 +53,7 @@ public class LineSplitter implements ISplitter{
             
             ICSVFile poolMember = new CSVFile(Config.DEFAULT_WORKING_DIR + ug.getUnique() + ".csv");
             poolMember.writePool(lp);
+            poolMember.close();
             pool.add(poolMember);
         }
     }

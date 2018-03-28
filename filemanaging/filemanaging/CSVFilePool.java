@@ -1,6 +1,9 @@
 package filemanaging;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -49,6 +52,23 @@ public class CSVFilePool extends ArrayList<ICSVFile>
     public void notifyOpen()
     {
         this.openFileCount ++;
+    }
+    
+    @Override
+    public void finalize() throws Throwable
+    {
+        try {
+            for (ICSVFile f:this)
+            {
+                try {
+                    f.close();
+                } catch (IOException ex) {
+                    //
+                }
+            }
+        } finally {
+            super.finalize();
+        }
     }
     
 

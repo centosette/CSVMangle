@@ -225,6 +225,7 @@ public class CSVFile implements ICSVFile
         {
             this.writeLine(l.toString());
         }
+        this.flush();
     }
     
     public void appendLine(String line) throws IOException, IllegalWritingMethodException
