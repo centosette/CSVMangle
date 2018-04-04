@@ -13,6 +13,7 @@ import java.text.DateFormat;
  */
 public final class Config {
     public static final String DEFAULT_SEPARATOR = ";";
+    public static final String DEFAULT_TEXT_DELIMITER = "\"";
     public static final int SAMPLE_SIZE_SMALL = 10;
     public static final int SAMPLE_SIZE_MID = 50;
     public static final int SAMPLE_SIZE_LARGE = 1000;

@@ -20,7 +20,7 @@ public class QuickSorter implements ILinePoolSorter
 
     @Override
     public CSVLinePool sort(CSVLinePool inpool, CSVSortKeySpec ks) {
-         
+         return null; //to be completed
     }
 
     

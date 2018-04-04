@@ -17,6 +17,7 @@ public class Rules {
     public static enum Rule {ISKEY, GROUP, SUM, COUNT, COUNT_DISTINCT, MAX, MIN, IGNORE, UNDEFINED, ANY}
     public static enum Nullable{YES, NO}
     public static enum SortDirection{ASC, DESC}
+    public static enum TextDelimitersSplit{REMOVE_START_TRAIL_DELMITERS, REMOVE_ALL_DELIMITERS, LEAVE_DELIMITERS}
     public static final int NONRELEVANT = -1;
     
     /**

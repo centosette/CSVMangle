@@ -1,10 +1,13 @@
 package filemanaging; 
 
+import algorithms.CSVLineSplitter;
+import algorithms.TextDelimitersMustBeEvenException;
 import config.Config;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.ArrayList;
+import rules.Rules;
 
 /**
  * Aggiungi qui una descrizione della classe CSVFile
@@ -17,6 +20,7 @@ public class CSVFile implements ICSVFile
     
     private String filename;
     private String separator = Config.DEFAULT_SEPARATOR;
+    private String delimiter = Config.DEFAULT_TEXT_DELIMITER;
     private int recordlength = 0;
     private boolean readLine = true;
     private Path filePath;
@@ -36,6 +40,7 @@ public class CSVFile implements ICSVFile
      */
     public CSVFile(Path filePath
             , String separator
+            , String delimiter
             , int recordlength
             , Charset cs
             , boolean hasHeaders) throws IOException 
@@ -44,6 +49,7 @@ public class CSVFile implements ICSVFile
         this.filePath = filePath;
         this.filename = filePath.toString();
         this.separator = separator;
+        this.delimiter = delimiter;
         this.hasHeaders = hasHeaders;
         if (recordlength > 0) //if the records are of a fixed length...
         {
@@ -73,12 +79,12 @@ public class CSVFile implements ICSVFile
     public CSVFile(String filename
             , int recordlength) throws IOException
     {
-        this(Paths.get(filename, ""),Config.DEFAULT_SEPARATOR,recordlength, Charset.defaultCharset(), false);
+        this(Paths.get(filename, ""),Config.DEFAULT_SEPARATOR, Config.DEFAULT_TEXT_DELIMITER, recordlength, Charset.defaultCharset(), false);
     }
 
     public CSVFile(String filename) throws IOException
     {
-        this(Paths.get(filename, ""),Config.DEFAULT_SEPARATOR,0, Charset.defaultCharset(), false);
+        this(Paths.get(filename, ""),Config.DEFAULT_SEPARATOR,Config.DEFAULT_TEXT_DELIMITER, 0, Charset.defaultCharset(), false);
     }
  
     
@@ -106,7 +112,7 @@ public class CSVFile implements ICSVFile
         Files.delete(filePath);
     }
     
-    public String getLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public String getLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         if (!fileIsOpen) this.openRead(true);
         if (readLine && forReading) {
@@ -126,16 +132,16 @@ public class CSVFile implements ICSVFile
         throw(new IllegalReadingMethodException());
     }
     
-    public ICSVLine getCSVLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public ICSVLine getCSVLine() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         String line;
         line = this.getLine();
         if (line == null) return null;
-        return new CSVLine(line, this.separator, this.headers);
+        return new CSVLine(line, this.separator, this.delimiter, this.headers);
     }
     
     @Override
-    public CSVLinePool getPool(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public CSVLinePool getPool(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         CSVLinePool pool = new CSVLinePool();
         int count = 0;
@@ -153,7 +159,7 @@ public class CSVFile implements ICSVFile
     
     
     @Override
-    public CSVLinePool getPool(int maxLines, long offset, long maxBytes) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public CSVLinePool getPool(int maxLines, long offset, long maxBytes) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         CSVLinePool pool = new CSVLinePool();
         int count = 0;
@@ -179,7 +185,7 @@ public class CSVFile implements ICSVFile
     
     
     
-    public ArrayList<String> readSample(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public ArrayList<String> readSample(int maxSize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         ArrayList<String> sample = new ArrayList<>();
         int count = 0;
@@ -310,7 +316,7 @@ public class CSVFile implements ICSVFile
     }
     
    
-    private void openRead(boolean refreshLinesAndHeaders) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    private void openRead(boolean refreshLinesAndHeaders) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         if (this.fileIsOpen)
         {
@@ -382,25 +388,25 @@ public class CSVFile implements ICSVFile
         this.fileout.flush();
     }
 
-    private void createHeaders() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
+    private void createHeaders() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException {
         String line;
         line = this.getLine();
         
         if (this.hasHeaders())
         {
-            this.headers = new CSVHeadLine(line, this.separator);
+            this.headers = new CSVHeadLine(line, this.separator, this.delimiter);
         }
         else
         {
             String fakeline = "";
             int count = 0;
-            for (String s : line.split(this.separator))
+            for (String s : CSVLineSplitter.split(line, separator, this.delimiter, Rules.TextDelimitersSplit.LEAVE_DELIMITERS))
             {
                 fakeline += "FIELD_" + count + this.separator;
                 count++;
             }
             line = fakeline.substring(0, fakeline.lastIndexOf(this.separator)-1);
-            this.headers = new CSVHeadLine(line, this.separator);
+            this.headers = new CSVHeadLine(line, this.separator, this.delimiter);
         }
         rewind();
         
@@ -412,7 +418,7 @@ public class CSVFile implements ICSVFile
      * @throws IllegalReadingMethodException
      * @throws IllegalFieldNumberInLineException 
      */
-    private void guessLines() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
+    private void guessLines() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException {
         if (!haveGuessedLines)
         {
             long totalLength = 0;
@@ -429,7 +435,7 @@ public class CSVFile implements ICSVFile
     }
 
     @Override
-    public void rewind() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
+    public void rewind() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException {
         reOpen(); //there must be some way better than this...
         
         /*
@@ -445,7 +451,7 @@ public class CSVFile implements ICSVFile
      * @throws IllegalReadingMethodException
      * @throws IllegalFieldNumberInLineException 
      */
-    private void reOpen() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException {
+    private void reOpen() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException {
         if (this.fileIsOpen && this.forReading) {
             this.close();
             this.openRead(false);

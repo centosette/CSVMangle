@@ -1,7 +1,10 @@
 package filemanaging;
 
+import algorithms.CSVLineSplitter;
+import algorithms.TextDelimitersMustBeEvenException;
 import config.Config;
 import java.util.ArrayList;
+import rules.Rules;
 
 
 /**
@@ -14,6 +17,7 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
 {
     // variabili d'istanza - sostituisci l'esempio che segue con il tuo
     private String separator = Config.DEFAULT_SEPARATOR;
+    private String delimiter = Config.DEFAULT_TEXT_DELIMITER;
     private int fieldCount = 0;
     private String text;
     private String headers = "";
@@ -21,22 +25,30 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
     
     /**
      * Costruttore degli oggetti di classe  CSVLine
+     * @param text
+     * @param separator
+     * @param delimiter
+     * @param headLine
+     * @throws filemanaging.IllegalFieldNumberInLineException
+     * @throws algorithms.TextDelimitersMustBeEvenException
      */
-    public CSVLine(String text, String separator, CSVHeadLine headLine) throws IllegalFieldNumberInLineException
+    public CSVLine(String text, String separator, String delimiter, CSVHeadLine headLine) throws IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         // inizializza le variabili d'istanza
         this.separator = separator;
+        this.delimiter = delimiter;
         this.text = text;
         this.fieldCount = headLine.size();
         this.headLine = headLine;
         this.headers = headLine.toString();
         
-        if (this.fieldCount != text.split(this.separator).length)
+        int textFieldCount = (CSVLineSplitter.split(text, separator, delimiter, Rules.TextDelimitersSplit.LEAVE_DELIMITERS)).length;
+        if (this.fieldCount != textFieldCount)
         {
-            throw (new IllegalFieldNumberInLineException("FIELDCOUNT: " + text.split(this.separator).length + " VS " + fieldCount + " - " + "TEXT: " + text));
+            throw (new IllegalFieldNumberInLineException("FIELDCOUNT: " + textFieldCount + " VS " + fieldCount + " - " + "TEXT: " + text));
         }
         int count = 0;
-        for(String s : text.split(this.separator))
+        for(String s : CSVLineSplitter.split(text, separator, delimiter, Rules.TextDelimitersSplit.LEAVE_DELIMITERS))
         {
             this.add(new CSVField((CSVHeader)headLine.get(count), s, count));
             count++;
@@ -81,6 +93,11 @@ public class CSVLine extends ArrayList<ICSVField> implements ICSVLine
     @Override
     public String getName(int index) {
         return headLine.getName(index);
+    }
+
+    @Override
+    public String getDelimiter() {
+        return this.delimiter;
     }
    
 }

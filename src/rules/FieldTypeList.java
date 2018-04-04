@@ -4,6 +4,7 @@
  */
 package rules;
 
+import algorithms.TextDelimitersMustBeEvenException;
 import config.Config;
 import config.Config.DataType;
 import filemanaging.CSVLinePool;
@@ -38,11 +39,11 @@ public class FieldTypeList extends ArrayList<FieldType>{
         return this.file;
     }
     //
-    public void guessFieldTypes() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public void guessFieldTypes() throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         this.guessFieldTypes(Config.SAMPLE_SIZE_MID);
     }
-    public void guessFieldTypes(int samplesize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException
+    public void guessFieldTypes(int samplesize) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, TextDelimitersMustBeEvenException
     {
         CSVLinePool pool = file.getPool(samplesize);
         int size = file.getHeaders().getFieldCount();

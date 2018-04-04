@@ -1,6 +1,7 @@
+package test;
 
-import algorithms.ISplitter;
-import algorithms.LineSplitter;
+
+import algorithms.LineFileSplitter;
 import filemanaging.CSVFile;
 import filemanaging.CSVFilePool;
 import filemanaging.ICSVFile;
@@ -10,6 +11,8 @@ import filemanaging.IllegalWritingMethodException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import algorithms.IFileSplitter;
+import algorithms.TextDelimitersMustBeEvenException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -26,7 +29,7 @@ public class TestSplitter {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, TextDelimitersMustBeEvenException {
         // TODO code application logic here
         /*
         if (args.length == 0)
@@ -36,7 +39,7 @@ public class TestSplitter {
         }
         */
         ICSVFile file;
-        ISplitter splitter;
+        IFileSplitter splitter;
         CSVFilePool pool;
         
         file = new CSVFile("/home/marco/dev/csv/untitled.csv");
@@ -53,7 +56,7 @@ public class TestSplitter {
             }
         }
         
-        splitter = new LineSplitter();
+        splitter = new LineFileSplitter();
         try {
             file.rewind();
             pool = splitter.split(file, 50);

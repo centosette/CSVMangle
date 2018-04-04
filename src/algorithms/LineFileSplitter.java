@@ -19,21 +19,21 @@ import utils.UniqueGenerator;
  *
  * @author marco
  */
-public class LineSplitter implements ISplitter{
+public class LineFileSplitter implements IFileSplitter{
     
     private ICSVFile file;
     private int numLines;
     private final CSVFilePool pool;
     private final UniqueGenerator ug;
     
-    public LineSplitter ()
+    public LineFileSplitter ()
     {
         this.pool = new CSVFilePool();
         this.ug = UniqueGenerator.getInstance();
     }
 
     @Override
-    public CSVFilePool split(ICSVFile file, int numLines) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException{
+    public CSVFilePool split(ICSVFile file, int numLines) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException, TextDelimitersMustBeEvenException{
         this.file = file;
         this.numLines = numLines;
         splitSerial();
@@ -41,7 +41,7 @@ public class LineSplitter implements ISplitter{
         
     }
     
-    private void splitSerial () throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException
+    private void splitSerial () throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException, TextDelimitersMustBeEvenException
     {   
         for(;;)        
         {

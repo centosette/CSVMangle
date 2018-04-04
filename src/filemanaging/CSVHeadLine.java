@@ -16,16 +16,18 @@ public class CSVHeadLine extends ArrayList<ICSVField> implements ICSVLine{
     
     private String text;
     private String separator = Config.DEFAULT_SEPARATOR;
+    private String delimiter = Config.DEFAULT_TEXT_DELIMITER;
     private int headerCount = 0;
     
     
-    public CSVHeadLine (String text, String separator)
+    public CSVHeadLine (String text, String separator, String delimiter)
     {
         this.text = text;
         this.separator = separator;
+        this.delimiter = delimiter;
         
         
-        for (String s : text.split(separator))
+        for (String s : text.split(separator, -1))
         {
             this.add(new CSVHeader(s, this.headerCount));
             headerCount++;
@@ -34,7 +36,7 @@ public class CSVHeadLine extends ArrayList<ICSVField> implements ICSVLine{
     
     public CSVHeadLine (String text)
     {
-        this(text, Config.DEFAULT_SEPARATOR);
+        this(text, Config.DEFAULT_SEPARATOR, Config.DEFAULT_TEXT_DELIMITER);
     }
     
     @Override
@@ -70,5 +72,10 @@ public class CSVHeadLine extends ArrayList<ICSVField> implements ICSVLine{
     @Override
     public String getName(int index) {
         return super.get(index).getName();
+    }
+
+    @Override
+    public String getDelimiter() {
+        return this.delimiter;
     }
 }

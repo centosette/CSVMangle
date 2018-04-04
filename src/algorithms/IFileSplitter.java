@@ -18,8 +18,8 @@ import java.io.IOException;
  *
  * @author marco
  */
-public interface ISplitter {
+public interface IFileSplitter {
     
-    public CSVFilePool split(ICSVFile file, int lines) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException;
+    public CSVFilePool split(ICSVFile file, int lines) throws IOException, IllegalReadingMethodException, IllegalFieldNumberInLineException, IllegalWritingMethodException, TextDelimitersMustBeEvenException;
     
 }
